@@ -3,20 +3,26 @@
     <head>
     <script>
       window.onload = function() {
-
+        CanvasJS.addColorSet("custom",
+                [ "#2E8B57",
+                 "#008080"]);
         var dataPoints = [];
 
         var chart = new CanvasJS.Chart("chartContainer", {
-            theme: "light2",
+            theme: "dark1",
+            colorSet: "custom",
             title: {
                 text: "Live Humidity Data"
+            },
+            axisY: {
+                gridColor: "#404040",
             },
             data: [{
                 type: "line",
                 dataPoints: dataPoints
             }]
         });
-        updateData();
+        getData();
 
         // Initial Values
         var xValue = 0;
@@ -32,7 +38,9 @@
                     yValue = parseInt(value[1]);
                 });
             } else {
-                //dataPoints.shift();
+                if (dataPoints.length > 100) {
+                  dataPoints.shift();
+                }
                 dataPoints.push({x: data[0][0], y: parseInt(data[0][1])});
                 xValue++;
                 yValue = parseInt(data[0][1]);
@@ -43,16 +51,20 @@
             setTimeout(updateData, 1000);
         }
 
-        function updateData() {
+        function getData() {
             $.getJSON("http://raspberrypi:5000/data", addData);
+        }
+
+        function updateData() {
+            $.getJSON("http://raspberrypi:5000/dataUpdate", addData);
         }
 
       }
     </script>
     </head>
-    <body>
+    <body style="background: #2A2A2A; color: #F2F2F2;">
         <h1>Home Humidity</h1>
-        <div id="chartContainer" style="height:300px; width:100%;"></div>
+        <div id="chartContainer" style="height:390px; width:100%;"></div>
         <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
         <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     </body>
